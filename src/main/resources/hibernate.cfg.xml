@@ -4,12 +4,18 @@
         "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
-        <property name="hibernate.connection.datasource">java:comp/env/jdbc/TestDB</property>
+
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.provider_class">com.zaxxer.hikari.hibernate.HikariConnectionProvider</property>
+        <property name="hibernate.hikari.dataSource.url">jdbc:mysql://localhost:3306/TestDB?useSSL=false</property>
+        <property name="hibernate.hikari.dataSource.user">exampleUser</property>
+        <property name="hibernate.hikari.dataSource.password">sEcReT</property>
+        <property name="hibernate.hikari.dataSourceClassName">com.mysql.jdbc.jdbc2.optional.MysqlDataSource</property>
+        <property name="hibernate.hikari.dataSource.cachePrepStmts">true</property>
+        <property name="hibernate.hikari.dataSource.prepStmtCacheSize">250</property>
+        <property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit">2048</property>
+        <property name="hibernate.hikari.dataSource.useServerPrepStmts">true</property>
         <property name="hibernate.current_session_context_class">thread</property>
 
-        <!-- Mapping with model class containing annotations -->
-        <mapping class="RandomNumberPOJO"/>
     </session-factory>
 </hibernate-configuration>

@@ -2,27 +2,20 @@
  * Created by stefan on 13.06.16.
  */
 
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Projections;
-import org.hibernate.query.Query;
-import org.hibernate.type.IntegerType;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.util.List;
 import java.util.Random;
 
 
@@ -33,14 +26,26 @@ public class HelloServlet extends HttpServlet {
     {
         PrintWriter out = res.getWriter();
         addRandomNumber(req);
-
-
-
-        out.println("Hello, world Stefan...!");
         out.println("There are " + countNumbers(req) + " random numbers");
+
+
+        List<RandomNumberPOJO> numbers = getAllRandomNumbers(req,res);
+
+        out.println("Random Numbers:");
+        out.println("----------");
+
+        for(RandomNumberPOJO record:numbers){
+            out.println("ID: " + record.getId() + "\t :\t" + record.getRandomNumber());
+        }
+
         out.close();
+
     }
 
+    /**
+     * Create a new random number and store it the database
+     * @param request
+     */
     private void addRandomNumber(HttpServletRequest request){
         SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("SessionFactory");
 
@@ -50,7 +55,6 @@ public class HelloServlet extends HttpServlet {
         Random rand = new Random();
         int randomInteger = 1 + rand.nextInt((999) + 1);
 
-
         randomNumber.setRandomNumber(randomInteger);
         session.save(randomNumber);
         tx.commit();
@@ -58,16 +62,44 @@ public class HelloServlet extends HttpServlet {
 
 
 
+
+
     }
 
+    /**
+     * Get a list of all RandomNumberPOJO objects
+     * @param request
+     * @param response
+     * @return
+     */
+    private List<RandomNumberPOJO> getAllRandomNumbers(HttpServletRequest request, HttpServletResponse response){
+        SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("SessionFactory");
+        Session session = sessionFactory.getCurrentSession();
+        Transaction tx = session.beginTransaction();
+        TypedQuery<RandomNumberPOJO> query = session.createQuery(
+                "from RandomNumberPOJO", RandomNumberPOJO.class);
+
+        List<RandomNumberPOJO> numbers =query.getResultList();
+
+
+
+        tx.commit();
+        session.close();
+
+        return numbers;
+
+
+    }
+
+    /**
+     * Count records
+     * @param request
+     * @return
+     */
     private int countNumbers(HttpServletRequest request){
         SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("SessionFactory");
         Session session = sessionFactory.getCurrentSession();
         Transaction tx = session.beginTransaction();
-
-
-        Query query = session.createQuery(
-                "SELECT COUNT(id) FROM RandomNumberPOJO");
 
         String count = session.createQuery("SELECT COUNT(id) FROM RandomNumberPOJO").uniqueResult().toString();
 

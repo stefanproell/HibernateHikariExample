@@ -29,8 +29,7 @@ public class HibernateSessionFactoryListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         Configuration configuration = new Configuration();
         configuration.configure("hibernate.cfg.xml");
-        logger.info("Hibernate Configuration created successfully");
-
+        // Add annotated class
         configuration.addAnnotatedClass(RandomNumberPOJO.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
