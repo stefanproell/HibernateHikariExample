@@ -5,6 +5,9 @@
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Projections;
+import org.hibernate.query.Query;
+import org.hibernate.type.IntegerType;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -29,35 +32,16 @@ public class HelloServlet extends HttpServlet {
             throws ServletException, IOException
     {
         PrintWriter out = res.getWriter();
-        InitialContext cxt = null;
-        int count=-1;
-        try {
-
-            addUser(req);
-
-            cxt = new InitialContext();
-            DataSource ds = (DataSource) cxt.lookup( "java:/comp/env/jdbc/TestDB" );
-            Connection connection = ds.getConnection();
-            Statement statement = connection.createStatement();
-            String sql = "SELECT COUNT(id) FROM CitationDB.RandomNumber";
-            ResultSet resultSet = statement.executeQuery(sql);
-            if(resultSet.next()){
-                count = resultSet.getInt(1);
-            }
-
-        } catch (NamingException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        addRandomNumber(req);
 
 
-        out.println("Hello, world Stefan!");
-        out.println("There are " + count + " random numbers");
+
+        out.println("Hello, world Stefan...!");
+        out.println("There are " + countNumbers(req) + " random numbers");
         out.close();
     }
 
-    private void addUser(HttpServletRequest request){
+    private void addRandomNumber(HttpServletRequest request){
         SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("SessionFactory");
 
         Session session = sessionFactory.getCurrentSession();
@@ -73,5 +57,24 @@ public class HelloServlet extends HttpServlet {
         session.close();
 
 
+
+    }
+
+    private int countNumbers(HttpServletRequest request){
+        SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("SessionFactory");
+        Session session = sessionFactory.getCurrentSession();
+        Transaction tx = session.beginTransaction();
+
+
+        Query query = session.createQuery(
+                "SELECT COUNT(id) FROM RandomNumberPOJO");
+
+        String count = session.createQuery("SELECT COUNT(id) FROM RandomNumberPOJO").uniqueResult().toString();
+
+        int rowCount = Integer.parseInt(count);
+
+        tx.commit();
+        session.close();
+        return rowCount;
     }
 }

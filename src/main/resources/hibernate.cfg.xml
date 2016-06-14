@@ -9,5 +9,7 @@
         <property name="hibernate.connection.datasource">java:comp/env/jdbc/TestDB</property>
         <property name="hibernate.current_session_context_class">thread</property>
 
+        <!-- Mapping with model class containing annotations -->
+        <mapping class="RandomNumberPOJO"/>
     </session-factory>
 </hibernate-configuration>

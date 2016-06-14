@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 /*
 
-CREATE TABLE `CitationDB`.`RandomNumber` (
+CREATE TABLE `CitationDB`.`RandomNumberTable` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `randomNumber` INT NOT NULL,
   PRIMARY KEY (`id`));
@@ -15,7 +15,7 @@ CREATE TABLE `CitationDB`.`RandomNumber` (
 
  */
 @Entity
-@Table(name="RandomNumber",
+@Table(name="RandomNumberTable",
         uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
 public class RandomNumberPOJO {
     @Id
